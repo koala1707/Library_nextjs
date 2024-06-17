@@ -1,10 +1,13 @@
 "use client"
 import Field from "./field/field";
 import "./modal.css";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NewBook from "./newBook";
+import { useRouter } from "next/navigation";
+import { getBooks } from "@/app/page";
 
 const Modal = () => {
+  const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const [details, setDetails] = useState({
     title: "",
@@ -14,6 +17,7 @@ const Modal = () => {
   })
   const [borrowChecked, setBorrowChecked] = useState(false);
   const [returnChecked, setReturnChecked] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
 
   const formFields = [
     {
@@ -40,6 +44,28 @@ const Modal = () => {
     },
   ]
 
+  useEffect(() => {
+    let res = fetch('http://localhost:3000/api/books', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({title: details["title"], owner: details["owner"], borrowed: details["borrowed"], returned: details["returned"]}),
+      
+    })
+    res.then(r => {
+      if(r.ok) {
+        // console.log("headers",r.headers);
+        // close a modal
+        handleModal();
+        // update a book list
+        getBooks();
+      }
+    })
+    router.push("http://localhost:3000/");
+    router.refresh();
+  },[submitted])
+
   const setTargetValue = (e) => {
     if (e.target.name === "borrowed") {
       setBorrowChecked(!borrowChecked);
@@ -55,8 +81,6 @@ const Modal = () => {
   const handleModal = () => {
     setOpenModal(() => !openModal)
   }
-
-
 
   const formModal = () => {
     if (openModal) {
@@ -74,7 +98,7 @@ const Modal = () => {
             ))}
           </form>
           <button onClick={handleModal}>Close</button>
-          <NewBook newBook={details} handleModal={handleModal}/>
+          <button onClick={() => setSubmitted(true)}>Submit</button>
         </div>
       )
     }
@@ -82,7 +106,7 @@ const Modal = () => {
 
   return (
     <>
-      <button onClick={handleModal}>Add New Book</button>
+      <button onClick={handleModal} className="add-btn">Add New Book</button>
       {formModal()}
     </>
 

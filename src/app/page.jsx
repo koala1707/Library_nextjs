@@ -2,7 +2,7 @@ import "./page.css";
 import SearchBar from "@/component/searchBar/searchBar";
 import Modal from "@/component/modal/modal";
 
-const getBooks = async () => {
+export const getBooks = async () => {
   const res = await fetch("http://localhost:3000/api/books", {
     method: 'GET',
     next: { revalidate: 0 }

@@ -60,3 +60,29 @@ export async function PATCH(req) {
     {status: 200, headers: {'content-type': 'application/json'}}
   )
 }
+
+export async function DELETE(req) {
+  try {
+    const id = await req.json();
+    const books = await fsPromises.readFile(booksPath, 'utf-8');
+    const bookList = JSON.parse(books);
+
+    const deleteBookIndex = bookList.findIndex(book => book.id === id);
+    if (deleteBookIndex < 0) {
+      return new NextResponse(
+        JSON.stringify({ message: "Book not found!" }), { status: 404, headers: { 'content-type': 'application/json' } }
+      )
+    }
+
+    bookList.splice(deleteBookIndex, 1);
+    const updateBooks = JSON.stringify(bookList);
+    await fsPromises.writeFile(booksPath, updateBooks);
+
+    return new NextResponse(
+      JSON.stringify({ message: "Book deleted successfully!" })
+    )
+  } catch (err) {
+    return new NextResponse({ message: "Error to delete a book." })
+  }
+
+}

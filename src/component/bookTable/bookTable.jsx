@@ -2,8 +2,13 @@
 import "./bookTable.css"
 import { useState, useEffect } from 'react'
 import Switch from "react-switch";
+import { getBooks } from "../../app/page";
+import { deleteBook } from "../deleteBook/deleteBook";
+import { useRouter } from "next/navigation";
+
 
 const BookTable = ({ data, selected }) => {
+  const router = useRouter();
   // console.log("booktable-data", data)
   const [bookBorrowed, setBookBorrowed] = useState();
   const [bookReturned, setBookReturned] = useState();
@@ -22,15 +27,23 @@ const BookTable = ({ data, selected }) => {
 
   useEffect(() => {
     if(updateBookId){
-      fetch('http://localhost:3000/api/books', {
+      let res = fetch('http://localhost:3000/api/books', {
         method: "PATCH",
-        next: { revalidate: 0 },
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({id: updateBookId, borrowed: bookBorrowed, returned: bookReturned})
       })
+      res.then(r => {
+        if(r.ok) {
+          // update a book list
+          getBooks();
+        }
+      })
     }
+    setUpdateBookId(false);
+    router.push("http://localhost:3000/");
+    router.refresh();
   },[updateBookId])
 
   return (
@@ -60,7 +73,7 @@ const BookTable = ({ data, selected }) => {
                 checked={book.returned}
                 onChange={() => handleToggle(book)}
               /></td>
-              <td><button className='delete-btn'>X</button></td>
+              <td><button className='delete-btn' onClick={() => deleteBook(book.id)}>X</button></td>
             </tr>
               ))}
           </tbody>
