@@ -3,7 +3,6 @@ import Field from "./field/field";
 import "./modal.css";
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
-import { getBooks } from "@/app/page";
 
 const Modal = () => {
   const router = useRouter();
@@ -44,23 +43,22 @@ const Modal = () => {
   ]
 
   useEffect(() => {
-    let res = fetch('http://localhost:3000/api/books', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({title: details["title"], owner: details["owner"], borrowed: details["borrowed"], returned: details["returned"]}),
-      
-    })
-    res.then(r => {
-      if(r.ok) {
-        // console.log("headers",r.headers);
-        // close a modal
-        handleModal();
-        // update a book list
-        getBooks();
-      }
-    })
+    if(submitted){
+      let res = fetch('http://localhost:3000/api/books', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({title: details["title"], owner: details["owner"], borrowed: details["borrowed"], returned: details["returned"]}),
+        
+      })
+      res.then(r => {
+        if(r.ok) {
+          // close a modal
+          handleModal();
+        }
+      })
+    }
     setSubmitted(false)
     router.push("http://localhost:3000/");
     router.refresh();

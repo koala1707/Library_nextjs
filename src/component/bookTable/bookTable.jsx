@@ -2,7 +2,6 @@
 import "./bookTable.css"
 import { useState, useEffect } from 'react'
 import Switch from "react-switch";
-import { getBooks } from "../../app/page";
 import { useRouter } from "next/navigation";
 
 
@@ -34,12 +33,6 @@ const BookTable = ({ data, selected }) => {
         },
         body: JSON.stringify({id: updateBookId, borrowed: bookBorrowed, returned: bookReturned})
       })
-      res.then(r => {
-        if(r.ok) {
-          // update a book list
-          getBooks();
-        }
-      })
     }
     if(deleteBookId){
       let res = fetch("http://localhost:3000/api/books", {
@@ -48,12 +41,6 @@ const BookTable = ({ data, selected }) => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({id: deleteBookId})
-      })
-      res.then(r => {
-        if(r.ok) {
-          // update a book list
-          getBooks();
-        }
       })
     }
     setUpdateBookId(false);
