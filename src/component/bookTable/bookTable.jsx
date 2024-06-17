@@ -3,7 +3,6 @@ import "./bookTable.css"
 import { useState, useEffect } from 'react'
 import Switch from "react-switch";
 import { getBooks } from "../../app/page";
-import { deleteBook } from "../deleteBook/deleteBook";
 import { useRouter } from "next/navigation";
 
 
@@ -13,6 +12,7 @@ const BookTable = ({ data, selected }) => {
   const [bookBorrowed, setBookBorrowed] = useState();
   const [bookReturned, setBookReturned] = useState();
   const [updateBookId, setUpdateBookId] = useState();
+  const [deleteBookId, setDeleteBookId] = useState();
 
   const handleToggle = (book) => {
     setBookBorrowed(!book.borrowed)
@@ -41,10 +41,26 @@ const BookTable = ({ data, selected }) => {
         }
       })
     }
+    if(deleteBookId){
+      let res = fetch("http://localhost:3000/api/books", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({id: deleteBookId})
+      })
+      res.then(r => {
+        if(r.ok) {
+          // update a book list
+          getBooks();
+        }
+      })
+    }
     setUpdateBookId(false);
+    setDeleteBookId(false);
     router.push("http://localhost:3000/");
     router.refresh();
-  },[updateBookId])
+  },[updateBookId, deleteBookId])
 
   return (
     <div className="table-container">
@@ -73,7 +89,7 @@ const BookTable = ({ data, selected }) => {
                 checked={book.returned}
                 onChange={() => handleToggle(book)}
               /></td>
-              <td><button className='delete-btn' onClick={() => deleteBook(book.id)}>X</button></td>
+              <td><button className='delete-btn' onClick={() => setDeleteBookId(book.id)}>X</button></td>
             </tr>
               ))}
           </tbody>

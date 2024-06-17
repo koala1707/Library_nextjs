@@ -2,7 +2,6 @@
 import Field from "./field/field";
 import "./modal.css";
 import { useState, useEffect } from 'react';
-import NewBook from "./newBook";
 import { useRouter } from "next/navigation";
 import { getBooks } from "@/app/page";
 
@@ -62,6 +61,7 @@ const Modal = () => {
         getBooks();
       }
     })
+    setSubmitted(false)
     router.push("http://localhost:3000/");
     router.refresh();
   },[submitted])
@@ -80,6 +80,12 @@ const Modal = () => {
 
   const handleModal = () => {
     setOpenModal(() => !openModal)
+    setDetails({
+      title: "",
+      owner: "",
+      borrowed: false,
+      returned: true
+    })
   }
 
   const formModal = () => {

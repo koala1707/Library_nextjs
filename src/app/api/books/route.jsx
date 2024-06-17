@@ -63,7 +63,7 @@ export async function PATCH(req) {
 
 export async function DELETE(req) {
   try {
-    const id = await req.json();
+    const {id} = await req.json();
     const books = await fsPromises.readFile(booksPath, 'utf-8');
     const bookList = JSON.parse(books);
 
